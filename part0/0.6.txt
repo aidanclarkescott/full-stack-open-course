@@ -1,0 +1,13 @@
+note over browser:
+browser uses the DOM API to add the note
+to the list and sends a POST request
+to update the list on the server.
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: {"message":"note created"}
+
+note over browser:
+subsequent GET requests to the server
+will include the newly added note
+end note
