@@ -48,15 +48,23 @@ const mostBlogs = (blogs) => {
 const mostLikes = (blogs) => {
   if (blogs.length === 0) return 0;
 
-  const likesArray = _.map(blogs, "likes");
-  const mostLikedBlog = _.chain(likesArray)
-    .countBy()
-    .toPairs()
-    .max(_.last)
-    .head()
-    .value();
+  const authors = {};
+  blogs.forEach(
+    (blog) =>
+      (authors[blog.author] = authors[blog.author]
+        ? authors[blog.author] + blog.likes
+        : blog.likes)
+  );
 
-  return mostLikedBlog;
+  const mostPopular = { author: "", likes: 0 };
+  for (const author in authors) {
+    if (authors[author] > mostPopular.likes) {
+      mostPopular.author = author;
+      mostPopular.likes = authors[author];
+    }
+  }
+
+  return mostPopular;
 };
 
 module.exports = {
