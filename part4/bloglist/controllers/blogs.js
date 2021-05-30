@@ -24,6 +24,8 @@ blogRouter.post("/", userExtractor, async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
 
+  savedBlog.user = user;
+
   response.status(201).json(savedBlog);
 });
 
@@ -34,7 +36,7 @@ blogRouter.delete("/:id", userExtractor, async (request, response) => {
   if (!request.token || user.id.toString() !== blog.user.toString()) {
     return response
       .status(401)
-      .json({ error: "missing token or user did not create this note" });
+      .json({ error: "missing token or user did not create this bloh" });
   }
 
   await Blog.findByIdAndRemove(request.params.id);
