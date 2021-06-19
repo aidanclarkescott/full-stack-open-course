@@ -36,7 +36,7 @@ blogRouter.delete("/:id", userExtractor, async (request, response) => {
   if (!request.token || user.id.toString() !== blog.user.toString()) {
     return response
       .status(401)
-      .json({ error: "missing token or user did not create this bloh" });
+      .json({ error: "missing token or user did not create this blog" });
   }
 
   await Blog.findByIdAndRemove(request.params.id);
@@ -55,7 +55,21 @@ blogRouter.put("/:id", async (request, response) => {
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
     new: true,
-  });
+  }).populate("user", { username: 1, name: 1 });
+  response.json(updatedBlog);
+});
+
+// Comments
+blogRouter.post("/:id/comments", async (request, response) => {
+  const body = request.body;
+
+  const blog = await Blog.findById(request.params.id);
+  blog.comments = blog.comments.concat(body.comment);
+
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  }).populate("user", { username: 1, name: 1 });
+
   response.json(updatedBlog);
 });
 

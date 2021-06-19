@@ -1,50 +1,53 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { likeBlog, deleteBlog, commentOnBlog } from "../reducers/blogReducer";
 
-const Blog = ({ blog, user, incrementLikes, deleteBlog }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const Blog = ({ blog }) => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
+  if (!blog) return null;
+
+  const handleDelete = () => {
+    dispatch(deleteBlog(blog));
+    history.push("/");
+  };
+
+  const handleComment = (e) => {
+    e.preventDefault();
+    dispatch(commentOnBlog(blog, e.target.comment.value));
+    e.target.comment.value = "";
   };
 
   return (
-    <div style={blogStyle} className="blog">
-      {blog.title} {blog.author}
-      {isExpanded ? (
-        <>
-          <button onClick={() => setIsExpanded(false)}>hide</button>
-          <div>
-            {blog.url}
-            <br />
-            likes: {blog.likes}
-            <button onClick={() => incrementLikes(blog)}>like</button>
-            <br />
-            {blog.user.name}
-            <br />
-            {user.username === blog.user.username ? (
-              <button onClick={() => deleteBlog(blog.id)}>remove</button>
-            ) : (
-              <></>
-            )}
-          </div>
-        </>
-      ) : (
-        <button onClick={() => setIsExpanded(true)}>view</button>
+    <div>
+      <h1>
+        {blog.title} {blog.author}
+      </h1>
+      <a href={`https://${blog.url}`}>{blog.url}</a>
+      <br />
+      likes: {blog.likes}
+      <button onClick={() => dispatch(likeBlog(blog))}>like</button>
+      <br />
+      added by {blog.user.name}
+      <br />
+      {user.username === blog.user.username && (
+        <button onClick={handleDelete}>remove</button>
       )}
+      <h3>comments</h3>
+      <form onSubmit={handleComment}>
+        <input type="text" name="comment" />
+        <button type="submit">add comment</button>
+      </form>
+      <ul>
+        {blog.comments.map((comment, commentIdx) => (
+          <li key={commentIdx}>{comment}</li>
+        ))}
+      </ul>
     </div>
   );
-};
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-  incrementLikes: PropTypes.func,
-  deleteBlog: PropTypes.func,
 };
 
 export default Blog;

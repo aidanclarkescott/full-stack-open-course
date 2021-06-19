@@ -1,91 +1,91 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
+import { initBlogs } from "./reducers/blogReducer";
+import { setUser, clearUser } from "./reducers/userReducer";
+import { getUsers } from "./reducers/usersReducer";
+
 import Blogs from "./components/Blogs";
+import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import blogService from "./services/blogs";
+import Users from "./components/Users";
+import User from "./components/User";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState(null);
+  const user = useSelector((state) => state.user);
+  const users = useSelector((state) => state.users);
+  const blogs = useSelector((state) => state.blogs);
+  const dispatch = useDispatch();
   const toggleBlogFormRef = useRef();
 
-  useEffect(() => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)));
-  }, []);
+  useEffect(() => dispatch(initBlogs()), []);
+
+  useEffect(() => dispatch(getUsers()), []);
 
   useEffect(() => {
     const userJSON = window.localStorage.getItem("currentBloglistUser");
     if (userJSON) {
-      const user = JSON.parse(userJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const savedUser = JSON.parse(userJSON);
+      dispatch(setUser(savedUser));
     }
   }, []);
 
-  const logout = () => {
-    setUser(null);
-    window.localStorage.removeItem("currentBloglistUser");
-    blogService.setToken("");
-  };
+  // Could alternatively use useParams in User and Blog components to find objects.
+  const userMatch = useRouteMatch("/users/:id");
+  const clickedUser = userMatch
+    ? users.find((u) => u.id === userMatch.params.id)
+    : null;
 
-  const addBlog = async (newBlog) => {
-    toggleBlogFormRef.current.toggleVisibility();
-    const blog = await blogService.addBlog(newBlog);
-    setBlogs(blogs.concat(blog).sort((a, b) => b.likes - a.likes));
-
-    setNotificationMessage(`a new blog ${blog.title} by ${blog.author} added`);
-    setTimeout(() => setNotificationMessage(null), 5000);
-  };
-
-  const incrementLikes = async (blog) => {
-    const newBlog = {
-      ...blog,
-      likes: blog.likes + 1,
-    };
-
-    const updatedBlog = await blogService.updateBlog(blog.id, newBlog);
-    setBlogs(
-      blogs
-        .map((blog) => (blog.id !== updatedBlog.id ? blog : updatedBlog))
-        .sort((a, b) => b.likes - a.likes)
-    );
-  };
-
-  const deleteBlog = async (id) => {
-    const blog = blogs.find((blog) => blog.id === id);
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.deleteBlog(id);
-      setBlogs(
-        blogs.filter((blog) => blog.id !== id).sort((a, b) => b.likes - a.likes)
-      );
-    }
-  };
+  const blogMatch = useRouteMatch("/blogs/:id");
+  const clickedBlog = blogMatch
+    ? blogs.find((b) => b.id === blogMatch.params.id)
+    : null;
 
   return (
     <div>
       {user === null ? (
-        <LoginForm setUser={setUser} />
+        <LoginForm />
       ) : (
         <>
-          <h2>blogs</h2>
-          <Notification message={notificationMessage} cssClass="notification" />
-          <p>
-            {user.name} logged in <button onClick={logout}>logout</button>
-          </p>
-          <Togglable buttonLabel="create new blog" ref={toggleBlogFormRef}>
-            <NewBlogForm addBlog={addBlog} />
-          </Togglable>
-          <Blogs
-            blogs={blogs}
-            user={user}
-            incrementLikes={incrementLikes}
-            deleteBlog={deleteBlog}
-          />
+          <div className="nav-bar">
+            <Link to={"/"}>
+              <p>blogs</p>
+            </Link>
+            <Link to={"/users"}>
+              <p>users</p>
+            </Link>
+            <p>{user.name} logged in</p>
+            <button onClick={() => dispatch(clearUser())}>logout</button>
+          </div>
+
+          <h2>blog app</h2>
+          <Notification cssClass="notification" />
+
+          <Switch>
+            <Route path="/users/:id">
+              <User user={clickedUser} />
+            </Route>
+            <Route path="/users">
+              <Users />
+            </Route>
+            <Route path="/blogs/:id">
+              <Blog blog={clickedBlog} />
+            </Route>
+
+            <Route path="/">
+              <Togglable buttonLabel="create new blog" ref={toggleBlogFormRef}>
+                <NewBlogForm
+                  toggleVisibility={() =>
+                    toggleBlogFormRef.current.toggleVisibility()
+                  }
+                />
+              </Togglable>
+              <Blogs />
+            </Route>
+          </Switch>
         </>
       )}
     </div>

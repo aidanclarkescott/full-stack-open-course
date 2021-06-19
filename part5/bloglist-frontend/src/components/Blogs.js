@@ -1,28 +1,27 @@
 import React from "react";
-import Blog from "./Blog";
-import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-const Blogs = ({ blogs, user, incrementLikes, deleteBlog }) => {
+const Blogs = () => {
+  const blogs = useSelector((state) => state.blogs);
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: "solid",
+    borderWidth: 1,
+    marginBottom: 5,
+  };
+
   return (
     <>
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          user={user}
-          incrementLikes={incrementLikes}
-          deleteBlog={deleteBlog}
-        />
+        <div key={blog.id} style={blogStyle}>
+          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+        </div>
       ))}
     </>
   );
-};
-
-Blogs.propTypes = {
-  blogs: PropTypes.array.isRequired,
-  user: PropTypes.object.isRequired,
-  incrementLikes: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
 };
 
 export default Blogs;

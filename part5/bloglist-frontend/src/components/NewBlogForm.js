@@ -1,18 +1,28 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addBlog } from "../reducers/blogReducer";
+import { setNotification } from "../reducers/notificationReducer";
 
-const NewBlogForm = ({ addBlog }) => {
+const NewBlogForm = ({ toggleVisibility }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
+  const dispatch = useDispatch();
+
   const handleCreateBlog = (event) => {
     event.preventDefault();
+    toggleVisibility();
 
-    addBlog({
-      title,
-      author,
-      url,
-    });
+    dispatch(
+      addBlog({
+        title,
+        author,
+        url,
+      })
+    );
+
+    dispatch(setNotification(`a new blog ${title} by ${author} added`, 5));
 
     setTitle("");
     setAuthor("");
@@ -30,6 +40,7 @@ const NewBlogForm = ({ addBlog }) => {
             type="text"
             value={title}
             name="Title"
+            required
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
@@ -40,6 +51,7 @@ const NewBlogForm = ({ addBlog }) => {
             type="text"
             value={author}
             name="Author"
+            required
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
@@ -50,6 +62,7 @@ const NewBlogForm = ({ addBlog }) => {
             type="text"
             value={url}
             name="Url"
+            required
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>

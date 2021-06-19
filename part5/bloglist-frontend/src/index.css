@@ -17,3 +17,13 @@
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.nav-bar {
+  background-color: lightgrey;
+  padding: 5px;
+}
+
+.nav-bar p {
+  display: inline;
+  padding: 0 2.5px;
+}
