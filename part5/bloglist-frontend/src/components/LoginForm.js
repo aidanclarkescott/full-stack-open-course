@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../reducers/userReducer";
 import Notification from "./Notification";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button, Typography } from "@material-ui/core";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -19,7 +19,7 @@ const LoginForm = () => {
 
   return (
     <>
-      <h2>Login</h2>
+      <Typography variant="h4">Login</Typography>
       <Notification type="error" />
       <form onSubmit={handleLogin}>
         <div>
