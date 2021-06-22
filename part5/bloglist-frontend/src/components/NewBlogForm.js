@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
+import { TextField, Button, Typography } from "@material-ui/core";
 
 const NewBlogForm = ({ toggleVisibility }) => {
   const [title, setTitle] = useState("");
@@ -31,42 +32,38 @@ const NewBlogForm = ({ toggleVisibility }) => {
 
   return (
     <>
-      <h2>create new</h2>
+      <Typography variant="h5" component="h3">
+        Create New Blog
+      </Typography>
       <form onSubmit={handleCreateBlog} id="new-blog-form">
         <div>
-          title:
-          <input
-            id="title"
+          <TextField
+            label="title"
             type="text"
             value={title}
-            name="Title"
-            required
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
-          author:
-          <input
-            id="author"
+          <TextField
+            label="author"
             type="text"
             value={author}
-            name="Author"
-            required
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
-          url:
-          <input
-            id="url"
+          <TextField
+            label="url"
             type="text"
             value={url}
-            name="Url"
-            required
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button type="submit">create</button>
+        <br />
+        <Button variant="contained" color="primary" type="submit">
+          create
+        </Button>
       </form>
     </>
   );

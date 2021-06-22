@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { likeBlog, deleteBlog, commentOnBlog } from "../reducers/blogReducer";
+import { TextField, Button, Typography } from "@material-ui/core";
 
 const Blog = ({ blog }) => {
   const user = useSelector((state) => state.user);
@@ -17,33 +18,59 @@ const Blog = ({ blog }) => {
 
   const handleComment = (e) => {
     e.preventDefault();
+    if (e.target.comment.value === "") return;
     dispatch(commentOnBlog(blog, e.target.comment.value));
     e.target.comment.value = "";
   };
 
   return (
     <div>
-      <h1>
-        {blog.title} {blog.author}
-      </h1>
-      <a href={`https://${blog.url}`}>{blog.url}</a>
+      <Typography variant="h5">
+        {blog.title} by {blog.author}
+      </Typography>
       <br />
-      likes: {blog.likes}
-      <button onClick={() => dispatch(likeBlog(blog))}>like</button>
-      <br />
-      added by {blog.user.name}
+      <Typography variant="body1">
+        <a href={`https://${blog.url}`}>{blog.url}</a>
+      </Typography>
+      <Typography variant="body1">
+        likes: {blog.likes}{" "}
+        <Button
+          color="primary"
+          variant="contained"
+          size="small"
+          onClick={() => dispatch(likeBlog(blog))}
+        >
+          like
+        </Button>{" "}
+      </Typography>
+      <Typography variant="body1">added by {blog.user.name}</Typography>
       <br />
       {user.username === blog.user.username && (
-        <button onClick={handleDelete}>remove</button>
+        <Button
+          color="secondary"
+          variant="contained"
+          size="small"
+          onClick={handleDelete}
+        >
+          remove
+        </Button>
       )}
-      <h3>comments</h3>
+
+      <Typography variant="h6">Comments</Typography>
       <form onSubmit={handleComment}>
-        <input type="text" name="comment" />
-        <button type="submit">add comment</button>
+        <div>
+          <TextField label="comment" type="text" name="comment" />
+        </div>
+        <br />
+        <Button variant="contained" color="primary" type="submit">
+          add comment
+        </Button>
       </form>
       <ul>
         {blog.comments.map((comment, commentIdx) => (
-          <li key={commentIdx}>{comment}</li>
+          <li key={commentIdx}>
+            <Typography variant="body2">{comment}</Typography>
+          </li>
         ))}
       </ul>
     </div>

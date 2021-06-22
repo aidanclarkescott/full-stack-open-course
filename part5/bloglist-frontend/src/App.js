@@ -5,6 +5,14 @@ import { initBlogs } from "./reducers/blogReducer";
 import { setUser, clearUser } from "./reducers/userReducer";
 import { getUsers } from "./reducers/usersReducer";
 
+import {
+  Container,
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+} from "@material-ui/core";
+
 import Blogs from "./components/Blogs";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
@@ -45,24 +53,32 @@ const App = () => {
     : null;
 
   return (
-    <div>
+    <Container>
       {user === null ? (
         <LoginForm />
       ) : (
         <>
-          <div className="nav-bar">
-            <Link to={"/"}>
-              <p>blogs</p>
-            </Link>
-            <Link to={"/users"}>
-              <p>users</p>
-            </Link>
-            <p>{user.name} logged in</p>
-            <button onClick={() => dispatch(clearUser())}>logout</button>
-          </div>
+          <AppBar position="static">
+            <Toolbar>
+              <Button color="inherit" component={Link} to="/">
+                blogs
+              </Button>
+              <Button color="inherit" component={Link} to="/users">
+                users
+              </Button>
+              <Typography variant="body2">{user.name} logged in</Typography>
+              <Button color="inherit" onClick={() => dispatch(clearUser())}>
+                logout
+              </Button>
+            </Toolbar>
+          </AppBar>
 
-          <h2>blog app</h2>
-          <Notification cssClass="notification" />
+          <br />
+          <Typography variant="h3" component="h1">
+            Blog App
+          </Typography>
+          <br />
+          <Notification type="success" />
 
           <Switch>
             <Route path="/users/:id">
@@ -83,12 +99,13 @@ const App = () => {
                   }
                 />
               </Togglable>
+              <br />
               <Blogs />
             </Route>
           </Switch>
         </>
       )}
-    </div>
+    </Container>
   );
 };
 
