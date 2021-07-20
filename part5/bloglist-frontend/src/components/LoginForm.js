@@ -20,6 +20,7 @@ const LoginForm = () => {
   return (
     <>
       <Typography variant="h4">Login</Typography>
+      <br />
       <Notification type="error" />
       <form onSubmit={handleLogin}>
         <div>

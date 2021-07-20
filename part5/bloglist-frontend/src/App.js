@@ -79,6 +79,7 @@ const App = () => {
           </Typography>
           <br />
           <Notification type="success" />
+          <br />
 
           <Switch>
             <Route path="/users/:id">
