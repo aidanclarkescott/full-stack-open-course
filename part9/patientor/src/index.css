@@ -1,0 +1,15 @@
+.goodHealth {
+  color: lime;
+}
+
+.okayHealth {
+  color: yellow;
+}
+
+.poorHealth {
+  color: orange;
+}
+
+.terribleHealth {
+  color: red;
+}
